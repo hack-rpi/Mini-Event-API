@@ -76,9 +76,7 @@ app.get("/GetLists", async function (req, res) {
 
   return res.status(200).json({
     message: "Lists retrieved.",
-    status: 200,
-    lists: getListsResponse.lists,
-    nextToken: getListsResponse.nextToken,
+    ...getListsResponse,
   });
 });
 
@@ -91,6 +89,12 @@ app.post("/AddList", async function (req, res) {
       .json({ message: "Unauthorized, no API Key provided.", status: 401 });
   }
 
+  if (!req.body.name) {
+    return res
+      .status(400)
+      .json({ message: "Bad Request, missing list name.", status: 400 });
+  }
+
   const apiKeyValidation = await validateApiKey(apiKey);
 
   if (
@@ -101,12 +105,6 @@ app.post("/AddList", async function (req, res) {
     return res
       .status(apiKeyValidation.status)
       .json({ message: "Unauthorized, invalid API Key.", status: 401 });
-  }
-
-  if (!req.body.name) {
-    return res
-      .status(400)
-      .json({ message: "Bad Request, missing list name.", status: 400 });
   }
 
   const createListResponse = await createList(
@@ -123,8 +121,7 @@ app.post("/AddList", async function (req, res) {
 
   return res.status(200).json({
     message: "List created.",
-    status: 200,
-    list: createListResponse.list,
+    ...createListResponse,
   });
 });
 
@@ -135,6 +132,14 @@ app.delete("/DeleteList", async function (req, res) {
     return res
       .status(401)
       .json({ message: "Unauthorized, no API Key provided.", status: 401 });
+  }
+
+  const listId = req.query.id;
+
+  if (!listId) {
+    return res
+      .status(400)
+      .json({ message: "Bad Request, missing listId.", status: 400 });
   }
 
   const apiKeyValidation = await validateApiKey(apiKey);
@@ -149,15 +154,7 @@ app.delete("/DeleteList", async function (req, res) {
       .json({ message: "Unauthorized, invalid API Key.", status: 401 });
   }
 
-  const listId = req.query.id as string;
-
-  if (!listId) {
-    return res
-      .status(400)
-      .json({ message: "Bad Request, missing listId.", status: 400 });
-  }
-
-  const getListResponse = await getList(listId);
+  const getListResponse = await getList(listId as string);
 
   if (getListResponse.status !== 200 || !getListResponse.list) {
     return res.status(getListResponse.status).json({
@@ -173,7 +170,7 @@ app.delete("/DeleteList", async function (req, res) {
     });
   }
 
-  const deleteListResponse = await deleteList(listId);
+  const deleteListResponse = await deleteList(listId as string);
 
   if (deleteListResponse.status !== 200) {
     return res.status(deleteListResponse.status).json({
@@ -182,7 +179,9 @@ app.delete("/DeleteList", async function (req, res) {
     });
   }
 
-  return res.status(deleteListResponse.status).json(deleteListResponse);
+  return res
+    .status(deleteListResponse.status)
+    .json({ ...deleteListResponse, message: "List deleted." });
 });
 
 app.get("/GetListItems", async function (req, res) {
@@ -192,6 +191,14 @@ app.get("/GetListItems", async function (req, res) {
       .status(401)
       .json({ message: "Unauthorized, no API Key provided.", status: 401 });
   }
+
+  const listId = req.query.id;
+  if (!listId) {
+    return res
+      .status(400)
+      .json({ message: "Bad Request, missing listId.", status: 400 });
+  }
+
   const apiKeyValidation = await validateApiKey(apiKey);
 
   if (
@@ -202,13 +209,6 @@ app.get("/GetListItems", async function (req, res) {
     return res
       .status(apiKeyValidation.status)
       .json({ message: "Unauthorized, invalid API Key.", status: 401 });
-  }
-
-  const listId = req.query.id;
-  if (!listId) {
-    return res
-      .status(400)
-      .json({ message: "Bad Request, missing listId.", status: 400 });
   }
 
   const getListResponse = await getList(listId as string);
@@ -227,6 +227,7 @@ app.get("/GetListItems", async function (req, res) {
   }
 
   const getListItemsResponse = await getListItems(listId as string);
+
   if (getListItemsResponse.status !== 200) {
     return res.status(getListItemsResponse.status).json({
       message: "Error getting list items.",
@@ -236,8 +237,7 @@ app.get("/GetListItems", async function (req, res) {
 
   return res.status(200).json({
     message: "List items retrieved.",
-    status: 200,
-    listItems: getListItemsResponse.listItems,
+    ...getListItemsResponse,
   });
 });
 
@@ -250,6 +250,14 @@ app.post("/AddListItem", async function (req, res) {
       .json({ message: "Unauthorized, no API Key provided.", status: 401 });
   }
 
+  const listId = req.body.listId;
+
+  if (!listId) {
+    return res
+      .status(400)
+      .json({ message: "Bad Request, missing listId.", status: 400 });
+  }
+
   const apiKeyValidation = await validateApiKey(apiKey);
 
   if (
@@ -260,13 +268,6 @@ app.post("/AddListItem", async function (req, res) {
     return res
       .status(apiKeyValidation.status)
       .json({ message: "Unauthorized, invalid API Key.", status: 401 });
-  }
-
-  const listId = req.body.listId;
-  if (!listId) {
-    return res
-      .status(400)
-      .json({ message: "Bad Request, missing listId.", status: 400 });
   }
 
   const getListResponse = await getList(listId);
@@ -308,8 +309,7 @@ app.post("/AddListItem", async function (req, res) {
 
   return res.status(200).json({
     message: "List item added.",
-    status: 200,
-    listItem: addListItemResponse.listItem,
+    ...addListItemResponse,
   });
 });
 
@@ -320,6 +320,14 @@ app.delete("/DeleteListItem", async function (req, res) {
     return res
       .status(401)
       .json({ message: "Unauthorized, no API Key provided.", status: 401 });
+  }
+
+  const listItemId = req.query.id;
+
+  if (!listItemId) {
+    return res
+      .status(400)
+      .json({ message: "Bad Request, missing list item id.", status: 400 });
   }
 
   const apiKeyValidation = await validateApiKey(apiKey);
@@ -334,15 +342,7 @@ app.delete("/DeleteListItem", async function (req, res) {
       .json({ message: "Unauthorized, invalid API Key.", status: 401 });
   }
 
-  const listItemId = req.query.id as string;
-
-  if (!listItemId) {
-    return res
-      .status(400)
-      .json({ message: "Bad Request, missing list item id.", status: 400 });
-  }
-
-  const getListItemResponse = await getListItem(listItemId);
+  const getListItemResponse = await getListItem(listItemId as string);
 
   if (getListItemResponse.status !== 200 || !getListItemResponse.listItem) {
     return res.status(getListItemResponse.status).json({
@@ -358,7 +358,7 @@ app.delete("/DeleteListItem", async function (req, res) {
     });
   }
 
-  const deleteListItemResponse = await deleteListItem(listItemId);
+  const deleteListItemResponse = await deleteListItem(listItemId as string);
 
   if (deleteListItemResponse.status !== 200) {
     return res.status(deleteListItemResponse.status).json({
@@ -381,6 +381,13 @@ app.put("/SetChecked", async function (req, res) {
       .json({ message: "Unauthorized, no API Key provided.", status: 401 });
   }
 
+  const listItemId = req.query.id;
+
+  if (!listItemId) {
+    return res
+      .status(400)
+      .json({ message: "Bad Request, missing list item id.", status: 400 });
+  }
 
   const apiKeyValidation = await validateApiKey(apiKey);
 
@@ -394,15 +401,7 @@ app.put("/SetChecked", async function (req, res) {
       .json({ message: "Unauthorized, invalid API Key.", status: 401 });
   }
 
-  const listItemId = req.query.id as string;
-
-  if (!listItemId) {
-    return res
-      .status(400)
-      .json({ message: "Bad Request, missing list item id.", status: 400 });
-  }
-
-  const getListItemResponse = await getListItem(listItemId);
+  const getListItemResponse = await getListItem(listItemId as string);
 
   if (getListItemResponse.status !== 200 || !getListItemResponse.listItem) {
     return res.status(getListItemResponse.status).json({
@@ -420,7 +419,7 @@ app.put("/SetChecked", async function (req, res) {
 
   const checked = req.query.checked === "true";
 
-  const setCheckedResponse = await setChecked(listItemId, checked);
+  const setCheckedResponse = await setChecked(listItemId as string, checked);
 
   if (setCheckedResponse.status !== 200) {
     return res.status(setCheckedResponse.status).json({
@@ -429,8 +428,9 @@ app.put("/SetChecked", async function (req, res) {
     });
   }
 
-  return res.status(200).json({...setCheckedResponse, message: "List item checked status set."});
-
+  return res
+    .status(200)
+    .json({ ...setCheckedResponse, message: "List item checked status set." });
 });
 
 app.put("/RenameItem", async function (req, res) {
@@ -442,6 +442,23 @@ app.put("/RenameItem", async function (req, res) {
       .json({ message: "Unauthorized, no API Key provided.", status: 401 });
   }
 
+  const listItemId = req.query.id as string;
+
+  if (!listItemId) {
+    return res
+      .status(400)
+      .json({ message: "Bad Request, missing list item id.", status: 400 });
+  }
+
+  const newName = req.query.name;
+
+  if (!newName) {
+    return res
+      .status(400)
+      .json({ message: "Bad Request, missing new name.", status: 400 });
+  }
+
+
   const apiKeyValidation = await validateApiKey(apiKey);
 
   if (
@@ -452,14 +469,6 @@ app.put("/RenameItem", async function (req, res) {
     return res
       .status(apiKeyValidation.status)
       .json({ message: "Unauthorized, invalid API Key.", status: 401 });
-  }
-
-  const listItemId = req.query.id as string;
-
-  if (!listItemId) {
-    return res
-      .status(400)
-      .json({ message: "Bad Request, missing list item id.", status: 400 });
   }
 
   const getListItemResponse = await getListItem(listItemId);
@@ -478,15 +487,7 @@ app.put("/RenameItem", async function (req, res) {
     });
   }
 
-  const newName = req.query.name as string;
-
-  if (!newName) {
-    return res
-      .status(400)
-      .json({ message: "Bad Request, missing new name.", status: 400 });
-  }
-
-  const renameItemResponse = await renameItem(listItemId, newName);
+  const renameItemResponse = await renameItem(listItemId, newName as string);
 
   if (renameItemResponse.status !== 200) {
     return res.status(renameItemResponse.status).json({
@@ -495,7 +496,9 @@ app.put("/RenameItem", async function (req, res) {
     });
   }
 
-  return res.status(200).json({...renameItemResponse, message: "List item renamed."});
+  return res
+    .status(200)
+    .json({ ...renameItemResponse, message: "List item renamed." });
 });
 
 app.listen(3000, function () {

@@ -35,6 +35,12 @@ const cognitoJwtVerifier = CognitoJwtVerifier.create({
   clientId: process.env.COGNITO_CLIENT_ID as string,
 });
 
+/**
+ * Extracts the user ID from a JWT token.
+ *
+ * @param jwt - The JWT token.
+ * @returns The user ID extracted from the JWT token.
+ */
 function getUserId(jwt: string): string {
   const jwtPayload = jwt.split(".")[1];
   const buffer = Buffer.from(jwtPayload, "base64");
@@ -49,7 +55,10 @@ app.get("/", function (req, res) {
     .json({ message: "API Key Manager Online", status: 200 });
 });
 
-app.get("/getkey", async function (req, res) {
+/**
+ * Retrieves the API key for the user associated with the provided JWT token.
+ */
+app.get("/getKey", async function (req, res) {
   const jwt = req.headers.authorization;
 
   if (!jwt) {
@@ -79,7 +88,10 @@ app.get("/getkey", async function (req, res) {
   return res.status(200).json(apiKeyResponse);
 });
 
-app.post("/refreshkey", async function (req, res) {
+/**
+ * Refreshes the API key for the user associated with the provided JWT token.
+ */
+app.post("/refreshKey", async function (req, res) {
   const jwt = req.headers.authorization;
 
   if (!jwt) {
@@ -99,13 +111,15 @@ app.post("/refreshkey", async function (req, res) {
       .json({ message: "Invalid Cognito JWT", status: 401 });
   }
 
-
   const apiKeyResponse = await refreshApiKey(userId);
 
   return res.status(apiKeyResponse.status).json(apiKeyResponse);
 });
 
-app.delete("/deletekey", async function (req, res) {
+/**
+ * Deletes the API key for the user associated with the provided JWT token.
+ */
+app.delete("/deleteKey", async function (req, res) {
   const jwt = req.headers.authorization;
 
   if (!jwt) {
@@ -113,6 +127,7 @@ app.delete("/deletekey", async function (req, res) {
       .status(401)
       .json({ message: "Unauthorized: No JWT provided", status: 401 });
   }
+
 
   let userId;
 
@@ -130,8 +145,8 @@ app.delete("/deletekey", async function (req, res) {
   return res.status(apiKeyResponse.status).json(apiKeyResponse);
 });
 
-app.listen(3000, function() {
-  console.log("App started")
+app.listen(3000, function () {
+  console.log("App started");
 });
 
 export default app;

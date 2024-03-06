@@ -4,9 +4,11 @@ import {
   PutItemCommand,
   DeleteItemCommand,
   type GetItemCommandInput,
-  type QueryCommandInput,
-  QueryCommand,
+  type PutItemCommandInput,
+  type DeleteItemCommandInput,
 } from "@aws-sdk/client-dynamodb";
+
+import crypto from "crypto";
 
 const REGION = process.env.REGION;
 const APIKEY_TABLE_NAME = process.env.STORAGE_APIKEYDB_NAME;
@@ -22,19 +24,25 @@ export async function getApiKey(userId: string) {
     ProjectionExpression: "UserId, APIKey",
   };
 
-  const response = await dbClient.send(new QueryCommand(params));
+  const response = await dbClient.send(new GetItemCommand(params));
 
-  if (response.Items && response.Items.length > 0) {
-    return { status: 200, apiKey: response.Items[0].APIKey.S };
-  } else {
+  if (response.$metadata.httpStatusCode !== 200) {
+    console.log("Issue getting API Key");
+    console.error(response);
+    return { status: 500, apiKey: null };
+  }
+
+  if (!response.Item) {
     return { status: 404, apiKey: null };
   }
+
+  return { status: 200, apiKey: response.Item.APIKey.S };
 }
 
 export async function createApiKey(userId: string) {
-  const apiKey = Math.random().toString(36).substring(2, 15);
+  const apiKey = crypto.randomBytes(16).toString("hex");
 
-  const params = {
+  const params: PutItemCommandInput = {
     TableName: APIKEY_TABLE_NAME,
     Item: {
       UserId: { S: userId },
@@ -54,7 +62,7 @@ export async function createApiKey(userId: string) {
 }
 
 export async function deleteApiKey(userId: string) {
-  const params = {
+  const params:DeleteItemCommandInput = {
     TableName: APIKEY_TABLE_NAME,
     Key: {
       UserId: { S: userId },
