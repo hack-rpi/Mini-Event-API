@@ -24,6 +24,7 @@ logs
 !.env.example
 
 amplify/team-provider-info.json
+amplify/backend/function/**/src/**/*.js
 
 #amplify-do-not-edit-begin
 amplify/\#current-cloud-backend

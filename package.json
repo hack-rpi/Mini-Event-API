@@ -7,7 +7,9 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "amplify:APIKeyManagerLambda": "cd amplify/backend/function/APIKeyManagerLambda && tsc -p ./tsconfig.json",
+    "amplify:TodoAPILambda": "cd amplify/backend/function/TodoAPILambda && tsc -p ./tsconfig.json"
   },
   "dependencies": {
     "nuxt": "^3.10.3",
