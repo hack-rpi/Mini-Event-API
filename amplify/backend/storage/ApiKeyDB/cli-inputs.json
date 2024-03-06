@@ -1,0 +1,18 @@
+{
+  "resourceName": "ApiKeyDB",
+  "tableName": "ApiKeyDB",
+  "partitionKey": {
+    "fieldName": "APIKey",
+    "fieldType": "string"
+  },
+  "gsi": [
+    {
+      "name": "ByOwnerId",
+      "partitionKey": {
+        "fieldName": "OwnerId",
+        "fieldType": "string"
+      }
+    }
+  ],
+  "triggerFunctions": []
+}

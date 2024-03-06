@@ -1,0 +1,22 @@
+{
+  "resourceName": "ListDB",
+  "tableName": "ListDB",
+  "partitionKey": {
+    "fieldName": "OwnerId",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "Timestamp",
+    "fieldType": "string"
+  },
+  "gsi": [
+    {
+      "name": "ByListId",
+      "partitionKey": {
+        "fieldName": "id",
+        "fieldType": "string"
+      }
+    }
+  ],
+  "triggerFunctions": []
+}

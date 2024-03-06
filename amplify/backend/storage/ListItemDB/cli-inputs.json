@@ -1,0 +1,22 @@
+{
+  "resourceName": "ListItemDB",
+  "tableName": "ListItemDB",
+  "partitionKey": {
+    "fieldName": "ListId",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "Timestamp",
+    "fieldType": "string"
+  },
+  "gsi": [
+    {
+      "name": "ByItemId",
+      "partitionKey": {
+        "fieldName": "id",
+        "fieldType": "string"
+      }
+    }
+  ],
+  "triggerFunctions": []
+}

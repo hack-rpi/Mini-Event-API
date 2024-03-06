@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "storage": {
+      "ListDB": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "ListItemDB": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "ApiKeyDB": [
+        "read"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}
