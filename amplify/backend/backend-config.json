@@ -69,6 +69,13 @@
           ],
           "category": "storage",
           "resourceName": "APIKeyDB"
+        },
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "miniEventAuth"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -107,6 +114,56 @@
       ],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_APIKeyManagerLambda_cognitoClientId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "APIKeyManagerLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_APIKeyManagerLambda_cognitoUserPoolId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "APIKeyManagerLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_APIKeyManagerLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "APIKeyManagerLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_APIKeyManagerLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "APIKeyManagerLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_TodoAPILambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "TodoAPILambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_TodoAPILambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "TodoAPILambda"
+        }
+      ]
     }
   },
   "storage": {
