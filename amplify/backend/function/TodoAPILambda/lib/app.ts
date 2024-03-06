@@ -1,12 +1,3 @@
-/*
-Copyright 2017 - 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. A copy of the License is located at
-    http://aws.amazon.com/apache2.0/
-or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and limitations under the License.
-*/
-
-
 /* Amplify Params - DO NOT EDIT
 	ENV
 	REGION
@@ -21,84 +12,494 @@ See the License for the specific language governing permissions and limitations 
 	STORAGE_LISTITEMDB_STREAMARN
 Amplify Params - DO NOT EDIT */
 
-import express from 'express'
-import bodyParser from 'body-parser'
-import awsServerlessExpressMiddleware from 'aws-serverless-express/middleware'
+import express from "express";
+import bodyParser from "body-parser";
+import awsServerlessExpressMiddleware from "aws-serverless-express/middleware";
+import {
+  createList,
+  createListItem,
+  deleteList,
+  deleteListItem,
+  getList,
+  getListItem,
+  getListItems,
+  getLists,
+  renameItem,
+  setChecked,
+  validateApiKey,
+} from "./dbActions";
 
 // declare a new express app
-const app = express()
-app.use(bodyParser.json())
-app.use(awsServerlessExpressMiddleware.eventContext())
+const app = express();
+app.use(bodyParser.json());
+app.use(awsServerlessExpressMiddleware.eventContext());
 
 // Enable CORS for all methods
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*")
-  res.header("Access-Control-Allow-Headers", "*")
-  next()
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "*");
+  next();
 });
 
-
-/**********************
- * Example get method *
- **********************/
-
-app.get('/', function(req, res) {
-  // Add your code here
-  res.json({success: 'get call succeed!', url: req.url});
+app.get("/status", async function (req, res) {
+  res.status(200).json({ message: "TODO API Online.", status: 200 });
 });
 
-app.get('//*', function(req, res) {
-  // Add your code here
-  res.json({success: 'get call succeed!', url: req.url});
+app.get("/GetLists", async function (req, res) {
+  const apiKey = req.headers.authorization;
+
+  if (!apiKey) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized, no API Key provided.", status: 401 });
+  }
+
+  const apiKeyValidation = await validateApiKey(apiKey);
+  if (
+    apiKeyValidation.status !== 200 ||
+    !apiKeyValidation.valid ||
+    !apiKeyValidation.ownerId
+  ) {
+    return res
+      .status(apiKeyValidation.status)
+      .json({ message: "Unauthorized, invalid API Key.", status: 401 });
+  }
+
+  const getListsResponse = await getLists(apiKeyValidation.ownerId);
+
+  if (getListsResponse.status !== 200) {
+    return res.status(getListsResponse.status).json({
+      message: "Error getting lists.",
+      status: getListsResponse.status,
+    });
+  }
+
+  return res.status(200).json({
+    message: "Lists retrieved.",
+    status: 200,
+    lists: getListsResponse.lists,
+    nextToken: getListsResponse.nextToken,
+  });
 });
 
-/****************************
-* Example post method *
-****************************/
+app.post("/AddList", async function (req, res) {
+  const apiKey = req.headers.authorization;
 
-app.post('/', function(req, res) {
-  // Add your code here
-  res.json({success: 'post call succeed!', url: req.url, body: req.body})
+  if (!apiKey) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized, no API Key provided.", status: 401 });
+  }
+
+  const apiKeyValidation = await validateApiKey(apiKey);
+
+  if (
+    apiKeyValidation.status !== 200 ||
+    !apiKeyValidation.valid ||
+    !apiKeyValidation.ownerId
+  ) {
+    return res
+      .status(apiKeyValidation.status)
+      .json({ message: "Unauthorized, invalid API Key.", status: 401 });
+  }
+
+  if (!req.body.name) {
+    return res
+      .status(400)
+      .json({ message: "Bad Request, missing list name.", status: 400 });
+  }
+
+  const createListResponse = await createList(
+    apiKeyValidation.ownerId,
+    req.body.name
+  );
+
+  if (createListResponse.status !== 200) {
+    return res.status(createListResponse.status).json({
+      message: "Error creating list.",
+      status: createListResponse.status,
+    });
+  }
+
+  return res.status(200).json({
+    message: "List created.",
+    status: 200,
+    list: createListResponse.list,
+  });
 });
 
-app.post('//*', function(req, res) {
-  // Add your code here
-  res.json({success: 'post call succeed!', url: req.url, body: req.body})
+app.delete("/DeleteList", async function (req, res) {
+  const apiKey = req.headers.authorization;
+
+  if (!apiKey) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized, no API Key provided.", status: 401 });
+  }
+
+  const apiKeyValidation = await validateApiKey(apiKey);
+
+  if (
+    apiKeyValidation.status !== 200 ||
+    !apiKeyValidation.valid ||
+    !apiKeyValidation.ownerId
+  ) {
+    return res
+      .status(apiKeyValidation.status)
+      .json({ message: "Unauthorized, invalid API Key.", status: 401 });
+  }
+
+  const listId = req.query.id as string;
+
+  if (!listId) {
+    return res
+      .status(400)
+      .json({ message: "Bad Request, missing listId.", status: 400 });
+  }
+
+  const getListResponse = await getList(listId);
+
+  if (getListResponse.status !== 200 || !getListResponse.list) {
+    return res.status(getListResponse.status).json({
+      message: "Error getting list to validate owner.",
+      status: getListResponse.status,
+    });
+  }
+
+  if (getListResponse.list.OwnerId.S !== apiKeyValidation.ownerId) {
+    return res.status(403).json({
+      message: "Forbidden, list does not belong to user.",
+      status: 403,
+    });
+  }
+
+  const deleteListResponse = await deleteList(listId);
+
+  if (deleteListResponse.status !== 200) {
+    return res.status(deleteListResponse.status).json({
+      message: "Error deleting list.",
+      status: deleteListResponse.status,
+    });
+  }
+
+  return res.status(deleteListResponse.status).json(deleteListResponse);
 });
 
-/****************************
-* Example put method *
-****************************/
+app.get("/GetListItems", async function (req, res) {
+  const apiKey = req.headers.authorization;
+  if (!apiKey) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized, no API Key provided.", status: 401 });
+  }
+  const apiKeyValidation = await validateApiKey(apiKey);
 
-app.put('/', function(req, res) {
-  // Add your code here
-  res.json({success: 'put call succeed!', url: req.url, body: req.body})
+  if (
+    apiKeyValidation.status !== 200 ||
+    !apiKeyValidation.valid ||
+    !apiKeyValidation.ownerId
+  ) {
+    return res
+      .status(apiKeyValidation.status)
+      .json({ message: "Unauthorized, invalid API Key.", status: 401 });
+  }
+
+  const listId = req.query.id;
+  if (!listId) {
+    return res
+      .status(400)
+      .json({ message: "Bad Request, missing listId.", status: 400 });
+  }
+
+  const getListResponse = await getList(listId as string);
+  if (getListResponse.status !== 200 || !getListResponse.list) {
+    return res.status(getListResponse.status).json({
+      message: "Error getting list to validate owner.",
+      status: getListResponse.status,
+    });
+  }
+
+  if (getListResponse.list.OwnerId.S !== apiKeyValidation.ownerId) {
+    return res.status(403).json({
+      message: "Forbidden, list does not belong to user.",
+      status: 403,
+    });
+  }
+
+  const getListItemsResponse = await getListItems(listId as string);
+  if (getListItemsResponse.status !== 200) {
+    return res.status(getListItemsResponse.status).json({
+      message: "Error getting list items.",
+      status: getListItemsResponse.status,
+    });
+  }
+
+  return res.status(200).json({
+    message: "List items retrieved.",
+    status: 200,
+    listItems: getListItemsResponse.listItems,
+  });
 });
 
-app.put('//*', function(req, res) {
-  // Add your code here
-  res.json({success: 'put call succeed!', url: req.url, body: req.body})
+app.post("/AddListItem", async function (req, res) {
+  const apiKey = req.headers.authorization;
+
+  if (!apiKey) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized, no API Key provided.", status: 401 });
+  }
+
+  const apiKeyValidation = await validateApiKey(apiKey);
+
+  if (
+    apiKeyValidation.status !== 200 ||
+    !apiKeyValidation.valid ||
+    !apiKeyValidation.ownerId
+  ) {
+    return res
+      .status(apiKeyValidation.status)
+      .json({ message: "Unauthorized, invalid API Key.", status: 401 });
+  }
+
+  const listId = req.body.listId;
+  if (!listId) {
+    return res
+      .status(400)
+      .json({ message: "Bad Request, missing listId.", status: 400 });
+  }
+
+  const getListResponse = await getList(listId);
+
+  if (getListResponse.status !== 200 || !getListResponse.list) {
+    return res.status(getListResponse.status).json({
+      message: "Error getting list to validate owner.",
+      status: getListResponse.status,
+    });
+  }
+
+  if (getListResponse.list.OwnerId.S !== apiKeyValidation.ownerId) {
+    return res.status(403).json({
+      message: "Forbidden, list does not belong to user.",
+      status: 403,
+    });
+  }
+
+  const listItem = req.body.name;
+
+  if (!listItem) {
+    return res
+      .status(400)
+      .json({ message: "Bad Request, missing item name.", status: 400 });
+  }
+
+  const addListItemResponse = await createListItem(
+    listId,
+    listItem,
+    apiKeyValidation.ownerId
+  );
+
+  if (addListItemResponse.status !== 200) {
+    return res.status(addListItemResponse.status).json({
+      message: "Error adding list item.",
+      status: addListItemResponse.status,
+    });
+  }
+
+  return res.status(200).json({
+    message: "List item added.",
+    status: 200,
+    listItem: addListItemResponse.listItem,
+  });
 });
 
-/****************************
-* Example delete method *
-****************************/
+app.delete("/DeleteListItem", async function (req, res) {
+  const apiKey = req.headers.authorization;
 
-app.delete('/', function(req, res) {
-  // Add your code here
-  res.json({success: 'delete call succeed!', url: req.url});
+  if (!apiKey) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized, no API Key provided.", status: 401 });
+  }
+
+  const apiKeyValidation = await validateApiKey(apiKey);
+
+  if (
+    apiKeyValidation.status !== 200 ||
+    !apiKeyValidation.valid ||
+    !apiKeyValidation.ownerId
+  ) {
+    return res
+      .status(apiKeyValidation.status)
+      .json({ message: "Unauthorized, invalid API Key.", status: 401 });
+  }
+
+  const listItemId = req.query.id as string;
+
+  if (!listItemId) {
+    return res
+      .status(400)
+      .json({ message: "Bad Request, missing list item id.", status: 400 });
+  }
+
+  const getListItemResponse = await getListItem(listItemId);
+
+  if (getListItemResponse.status !== 200 || !getListItemResponse.listItem) {
+    return res.status(getListItemResponse.status).json({
+      message: "Error getting list item to verify owner.",
+      status: getListItemResponse.status,
+    });
+  }
+
+  if (getListItemResponse.listItem.OwnerId.S !== apiKeyValidation.ownerId) {
+    return res.status(403).json({
+      message: "Forbidden, list item does not belong to user.",
+      status: 403,
+    });
+  }
+
+  const deleteListItemResponse = await deleteListItem(listItemId);
+
+  if (deleteListItemResponse.status !== 200) {
+    return res.status(deleteListItemResponse.status).json({
+      message: "Error deleting list item.",
+      status: deleteListItemResponse.status,
+    });
+  }
+
+  return res
+    .status(deleteListItemResponse.status)
+    .json({ ...deleteListItemResponse, message: "List item deleted." });
 });
 
-app.delete('//*', function(req, res) {
-  // Add your code here
-  res.json({success: 'delete call succeed!', url: req.url});
+app.put("/SetChecked", async function (req, res) {
+  const apiKey = req.headers.authorization;
+
+  if (!apiKey) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized, no API Key provided.", status: 401 });
+  }
+
+
+  const apiKeyValidation = await validateApiKey(apiKey);
+
+  if (
+    apiKeyValidation.status !== 200 ||
+    !apiKeyValidation.valid ||
+    !apiKeyValidation.ownerId
+  ) {
+    return res
+      .status(apiKeyValidation.status)
+      .json({ message: "Unauthorized, invalid API Key.", status: 401 });
+  }
+
+  const listItemId = req.query.id as string;
+
+  if (!listItemId) {
+    return res
+      .status(400)
+      .json({ message: "Bad Request, missing list item id.", status: 400 });
+  }
+
+  const getListItemResponse = await getListItem(listItemId);
+
+  if (getListItemResponse.status !== 200 || !getListItemResponse.listItem) {
+    return res.status(getListItemResponse.status).json({
+      message: "Error getting list item to verify owner.",
+      status: getListItemResponse.status,
+    });
+  }
+
+  if (getListItemResponse.listItem.OwnerId.S !== apiKeyValidation.ownerId) {
+    return res.status(403).json({
+      message: "Forbidden, list item does not belong to user.",
+      status: 403,
+    });
+  }
+
+  const checked = req.query.checked === "true";
+
+  const setCheckedResponse = await setChecked(listItemId, checked);
+
+  if (setCheckedResponse.status !== 200) {
+    return res.status(setCheckedResponse.status).json({
+      message: "Error setting list item checked status.",
+      status: setCheckedResponse.status,
+    });
+  }
+
+  return res.status(200).json({...setCheckedResponse, message: "List item checked status set."});
+
 });
 
-app.listen(3000, function() {
-    console.log("App started")
+app.put("/RenameItem", async function (req, res) {
+  const apiKey = req.headers.authorization;
+
+  if (!apiKey) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized, no API Key provided.", status: 401 });
+  }
+
+  const apiKeyValidation = await validateApiKey(apiKey);
+
+  if (
+    apiKeyValidation.status !== 200 ||
+    !apiKeyValidation.valid ||
+    !apiKeyValidation.ownerId
+  ) {
+    return res
+      .status(apiKeyValidation.status)
+      .json({ message: "Unauthorized, invalid API Key.", status: 401 });
+  }
+
+  const listItemId = req.query.id as string;
+
+  if (!listItemId) {
+    return res
+      .status(400)
+      .json({ message: "Bad Request, missing list item id.", status: 400 });
+  }
+
+  const getListItemResponse = await getListItem(listItemId);
+
+  if (getListItemResponse.status !== 200 || !getListItemResponse.listItem) {
+    return res.status(getListItemResponse.status).json({
+      message: "Error getting list item to verify owner.",
+      status: getListItemResponse.status,
+    });
+  }
+
+  if (getListItemResponse.listItem.OwnerId.S !== apiKeyValidation.ownerId) {
+    return res.status(403).json({
+      message: "Forbidden, list item does not belong to user.",
+      status: 403,
+    });
+  }
+
+  const newName = req.query.name as string;
+
+  if (!newName) {
+    return res
+      .status(400)
+      .json({ message: "Bad Request, missing new name.", status: 400 });
+  }
+
+  const renameItemResponse = await renameItem(listItemId, newName);
+
+  if (renameItemResponse.status !== 200) {
+    return res.status(renameItemResponse.status).json({
+      message: "Error renaming list item.",
+      status: renameItemResponse.status,
+    });
+  }
+
+  return res.status(200).json({...renameItemResponse, message: "List item renamed."});
 });
 
-// Export the app object. When executing the application local this does nothing. However,
-// to port it to AWS Lambda we will create a wrapper around that will load the app from
-// this file
-export default app
+app.listen(3000, function () {
+  console.log("App started");
+});
+
+export default app;

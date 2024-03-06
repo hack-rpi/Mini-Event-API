@@ -14,15 +14,12 @@ const APIKEY_TABLE_NAME = process.env.STORAGE_APIKEYDB_NAME;
 const dbClient = new DynamoDBClient({ region: REGION });
 
 export async function getApiKey(userId: string) {
-  const params: QueryCommandInput = {
+  const params: GetItemCommandInput = {
     TableName: APIKEY_TABLE_NAME,
-    IndexName: "ByOwnerId",
-    Limit: 1,
-    KeyConditionExpression: "OwnerId = :ownerId",
-    ExpressionAttributeValues: {
-      ":ownerId": { S: userId },
+    Key: {
+      UserId: { S: userId },
     },
-    ProjectionExpression: "OwnerId, APIKey",
+    ProjectionExpression: "UserId, APIKey",
   };
 
   const response = await dbClient.send(new QueryCommand(params));
@@ -40,7 +37,7 @@ export async function createApiKey(userId: string) {
   const params = {
     TableName: APIKEY_TABLE_NAME,
     Item: {
-      OwnerId: { S: userId },
+      UserId: { S: userId },
       APIKey: { S: apiKey },
     },
   };
@@ -60,7 +57,7 @@ export async function deleteApiKey(userId: string) {
   const params = {
     TableName: APIKEY_TABLE_NAME,
     Key: {
-      OwnerId: { S: userId },
+      UserId: { S: userId },
     },
   };
 

@@ -1,20 +1,20 @@
 {
   "permissions": {
     "storage": {
-      "ListDB": [
-        "create",
-        "read",
-        "update",
-        "delete"
-      ],
-      "ListItemDB": [
-        "create",
-        "read",
-        "update",
-        "delete"
-      ],
-      "ApiKeyDB": [
+      "APIKeyDB": [
         "read"
+      ],
+      "todoListDB": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "TodoListItemDB": [
+        "create",
+        "read",
+        "update",
+        "delete"
       ]
     }
   },

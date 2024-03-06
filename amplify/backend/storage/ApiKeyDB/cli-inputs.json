@@ -1,15 +1,15 @@
 {
-  "resourceName": "ApiKeyDB",
-  "tableName": "ApiKeyDB",
+  "resourceName": "APIKeyDB",
+  "tableName": "APIKeyDB",
   "partitionKey": {
-    "fieldName": "APIKey",
+    "fieldName": "UserId",
     "fieldType": "string"
   },
   "gsi": [
     {
-      "name": "ByOwnerId",
+      "name": "ByAPIKey",
       "partitionKey": {
-        "fieldName": "OwnerId",
+        "fieldName": "APIKey",
         "fieldType": "string"
       }
     }

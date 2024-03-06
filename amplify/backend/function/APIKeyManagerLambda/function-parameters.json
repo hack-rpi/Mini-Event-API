@@ -1,7 +1,7 @@
 {
   "permissions": {
     "storage": {
-      "ApiKeyDB": [
+      "APIKeyDB": [
         "create",
         "read",
         "update",

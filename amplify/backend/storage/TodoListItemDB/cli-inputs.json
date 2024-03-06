@@ -1,0 +1,22 @@
+{
+  "resourceName": "TodoListItemDB",
+  "tableName": "TodoListItemDB",
+  "partitionKey": {
+    "fieldName": "id",
+    "fieldType": "string"
+  },
+  "gsi": [
+    {
+      "name": "ByListId",
+      "partitionKey": {
+        "fieldName": "ListId",
+        "fieldType": "string"
+      },
+      "sortKey": {
+        "fieldName": "Timestamp",
+        "fieldType": "string"
+      }
+    }
+  ],
+  "triggerFunctions": []
+}

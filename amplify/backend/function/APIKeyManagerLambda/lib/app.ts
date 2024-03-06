@@ -35,6 +35,14 @@ const cognitoJwtVerifier = CognitoJwtVerifier.create({
   clientId: process.env.COGNITO_CLIENT_ID as string,
 });
 
+function getUserId(jwt: string): string {
+  const jwtPayload = jwt.split(".")[1];
+  const buffer = Buffer.from(jwtPayload, "base64");
+  const payload = buffer.toString("utf8");
+  const payloadJson = JSON.parse(payload);
+  return payloadJson.sub;
+}
+
 app.get("/", function (req, res) {
   return res
     .status(200)
@@ -50,21 +58,18 @@ app.get("/getkey", async function (req, res) {
       .json({ message: "Unauthorized: No JWT provided", status: 401 });
   }
 
+  let userId;
+
   try {
     cognitoJwtVerifier.verify(jwt);
+    userId = getUserId(jwt);
   } catch (error) {
     return res
       .status(401)
       .json({ message: "Invalid Cognito JWT", status: 401 });
   }
 
-  if (!req.query.userId) {
-    return res
-      .status(400)
-      .json({ message: "Bad Request: Missing userId", status: 400 });
-  }
-
-  const apiKeyResponse = await getApiKey(req.query.userId as string);
+  const apiKeyResponse = await getApiKey(userId);
 
   if (apiKeyResponse.status === 404) {
     const newApiKeyResponse = await createApiKey(req.query.userId as string);
@@ -83,21 +88,19 @@ app.post("/refreshkey", async function (req, res) {
       .json({ message: "Unauthorized: No JWT provided", status: 401 });
   }
 
+  let userId;
+
   try {
     cognitoJwtVerifier.verify(jwt);
+    userId = getUserId(jwt);
   } catch (error) {
     return res
       .status(401)
       .json({ message: "Invalid Cognito JWT", status: 401 });
   }
 
-  if (!req.body.userId) {
-    return res
-      .status(400)
-      .json({ message: "Bad Request: Missing userId", status: 400 });
-  }
 
-  const apiKeyResponse = await refreshApiKey(req.body.userId as string);
+  const apiKeyResponse = await refreshApiKey(userId);
 
   return res.status(apiKeyResponse.status).json(apiKeyResponse);
 });
@@ -111,23 +114,24 @@ app.delete("/deletekey", async function (req, res) {
       .json({ message: "Unauthorized: No JWT provided", status: 401 });
   }
 
+  let userId;
+
   try {
     cognitoJwtVerifier.verify(jwt);
+    userId = getUserId(jwt);
   } catch (error) {
     return res
       .status(401)
       .json({ message: "Invalid Cognito JWT", status: 401 });
   }
 
-  if (!req.query.userId) {
-    return res
-      .status(400)
-      .json({ message: "Bad Request: Missing userId", status: 400 });
-  }
-
-  const apiKeyResponse = await deleteApiKey(req.query.userId as string);
+  const apiKeyResponse = await deleteApiKey(userId);
 
   return res.status(apiKeyResponse.status).json(apiKeyResponse);
+});
+
+app.listen(3000, function() {
+  console.log("App started")
 });
 
 export default app;

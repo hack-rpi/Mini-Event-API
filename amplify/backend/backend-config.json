@@ -68,7 +68,7 @@
             "StreamArn"
           ],
           "category": "storage",
-          "resourceName": "ApiKeyDB"
+          "resourceName": "APIKeyDB"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -84,7 +84,7 @@
             "StreamArn"
           ],
           "category": "storage",
-          "resourceName": "ListDB"
+          "resourceName": "APIKeyDB"
         },
         {
           "attributes": [
@@ -93,7 +93,7 @@
             "StreamArn"
           ],
           "category": "storage",
-          "resourceName": "ListItemDB"
+          "resourceName": "todoListDB"
         },
         {
           "attributes": [
@@ -102,7 +102,7 @@
             "StreamArn"
           ],
           "category": "storage",
-          "resourceName": "ApiKeyDB"
+          "resourceName": "TodoListItemDB"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -110,15 +110,15 @@
     }
   },
   "storage": {
-    "ApiKeyDB": {
+    "APIKeyDB": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
     },
-    "ListDB": {
+    "TodoListItemDB": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
     },
-    "ListItemDB": {
+    "todoListDB": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
     }
