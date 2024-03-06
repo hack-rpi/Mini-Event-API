@@ -5,11 +5,13 @@
   "main": "index.js",
   "license": "Apache-2.0",
   "dependencies": {
+    "aws-jwt-verify": "^4.0.1",
     "aws-serverless-express": "^3.3.5",
     "body-parser": "^1.17.1",
     "express": "^4.15.2"
   },
   "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.525.0",
     "@types/aws-lambda": "^8.10.92",
     "@types/aws-serverless-express": "^3.3.9",
     "@types/express": "^4.17.21"
