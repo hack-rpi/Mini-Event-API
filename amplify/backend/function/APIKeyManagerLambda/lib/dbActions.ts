@@ -8,7 +8,7 @@ import {
   type DeleteItemCommandInput,
 } from "@aws-sdk/client-dynamodb";
 
-import crypto from "crypto";
+import * as crypto from "crypto";
 
 const REGION = process.env.REGION;
 const APIKEY_TABLE_NAME = process.env.STORAGE_APIKEYDB_NAME;
@@ -62,7 +62,7 @@ export async function createApiKey(userId: string) {
 }
 
 export async function deleteApiKey(userId: string) {
-  const params:DeleteItemCommandInput = {
+  const params: DeleteItemCommandInput = {
     TableName: APIKEY_TABLE_NAME,
     Key: {
       UserId: { S: userId },
@@ -83,7 +83,7 @@ export async function deleteApiKey(userId: string) {
 export async function refreshApiKey(userId: string) {
   const response = await deleteApiKey(userId);
   if (response.status !== 204) {
-    return response;
+    return {...response, apiKey: null};
   }
   return createApiKey(userId);
 }

@@ -7,9 +7,9 @@
   AUTH_MINIEVENTAUTH_USERPOOLID
 Amplify Params - DO NOT EDIT */
 
-import express from "express";
-import bodyParser from "body-parser";
-import awsServerlessExpressMiddleware from "aws-serverless-express/middleware";
+import * as express from "express";
+import * as bodyParser from "body-parser";
+import * as awsServerlessExpressMiddleware from "aws-serverless-express/middleware";
 import { CognitoJwtVerifier } from "aws-jwt-verify";
 import {
   getApiKey,
@@ -32,7 +32,7 @@ app.use(function (req, res, next) {
 
 const cognitoJwtVerifier = CognitoJwtVerifier.create({
   userPoolId: process.env.COGNITO_USER_POOL_ID as string,
-  tokenUse: "access",
+  tokenUse: "id",
   clientId: process.env.COGNITO_CLIENT_ID as string,
 });
 
@@ -82,7 +82,7 @@ app.get("/getKey", async function (req, res) {
   const apiKeyResponse = await getApiKey(userId);
 
   if (apiKeyResponse.status === 404) {
-    const newApiKeyResponse = await createApiKey(req.query.userId as string);
+    const newApiKeyResponse = await createApiKey(userId);
     return res.status(newApiKeyResponse.status).json(newApiKeyResponse);
   }
 

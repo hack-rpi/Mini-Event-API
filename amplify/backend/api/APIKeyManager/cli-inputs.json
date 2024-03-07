@@ -5,13 +5,7 @@
       "name": "/",
       "lambdaFunction": "APIKeyManagerLambda",
       "permissions": {
-        "setting": "private",
-        "auth": [
-          "create",
-          "read",
-          "update",
-          "delete"
-        ]
+        "setting": "open"
       }
     }
   }

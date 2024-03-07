@@ -9,7 +9,24 @@ export default {
     "./error.vue",
   ],
   theme: {
+    fontFamily: {
+      sans: ["Helvetica", "Arial", "sans-serif"],
+    },
     extend: {},
   },
-  plugins: [],
+  plugins: [require("daisyui")],
+
+  daisyui: {
+    themes: [
+      {
+        hackrpi: {
+          primary: "#74b7ef",
+          secondary: "#88b63a",
+          accent: "#edd559",
+          neutral: "#efefef",
+          "base-100": "#27303b",
+        },
+      },
+    ],
+  },
 };
