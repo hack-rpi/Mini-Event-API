@@ -4,7 +4,7 @@
       "APIKeyDB": [
         "read"
       ],
-      "todoListDB": [
+      "TodoListDB": [
         "create",
         "read",
         "update",

@@ -44,14 +44,14 @@ export async function validateApiKey(apiKey: string) {
 
 export async function getLists(userId: string, nextToken?: string) {
   const params: QueryCommandInput = {
-    TableName: process.env.STORAGE_LISTDB_NAME,
+    TableName: process.env.STORAGE_TODOLISTDB_NAME,
     IndexName: "ByOwnerId",
     KeyConditionExpression: "OwnerId = :ownerId",
     ExpressionAttributeValues: {
       ":ownerId": { S: userId },
     },
     Limit: 10,
-    ProjectionExpression: "id, name, timestamp",
+    ProjectionExpression: "id, ListName, CreatedAt",
   };
 
   if (
@@ -77,13 +77,13 @@ export async function getLists(userId: string, nextToken?: string) {
     return {
       id: item.id.S,
       listName: item.ListName.S,
-      timestamp: item.Timestamp.N,
+      createdAt: Number(item.CreatedAt.N),
     };
   });
 
-  // Sorts the lists in ascending order by timestamp
+  // Sorts the lists in ascending order by createdAt
   lists = lists.sort((a, b) => {
-    return Number(a.timestamp) - Number(b.timestamp);
+    return a.createdAt - b.createdAt;
   });
 
   let nextTokenResponse = null;
@@ -98,12 +98,12 @@ export async function createList(userId: string, listName: string) {
   const listId = uuidv4();
 
   const params: PutItemCommandInput = {
-    TableName: process.env.STORAGE_LISTDB_NAME,
+    TableName: process.env.STORAGE_TODOLISTDB_NAME,
     Item: {
       OwnerId: { S: userId },
       ListName: { S: listName },
       id: { S: listId },
-      Timestamp: { N: Date.now().toString() },
+      CreatedAt: { N: Date.now().toString() },
     },
   };
 
@@ -115,12 +115,12 @@ export async function createList(userId: string, listName: string) {
     return { status: 500, list: null };
   }
 
-  return { status: 200, list: { id: listId, listName, timestamp: Date.now() } };
+  return { status: 200, list: { id: listId, listName, createdAt: Date.now() } };
 }
 
 export async function getList(listId: string) {
   const params: GetItemCommandInput = {
-    TableName: process.env.STORAGE_LISTDB_NAME,
+    TableName: process.env.STORAGE_TODOLISTDB_NAME,
     Key: {
       id: { S: listId },
     },
@@ -134,12 +134,19 @@ export async function getList(listId: string) {
     return { status: 500, list: null };
   }
 
-  return { status: 200, list: response.Item };
+  const list = {
+    id: response.Item.id.S,
+    listName: response.Item.ListName.S,
+    createdAt: Number(response.Item.CreatedAt.N),
+    ownerId: response.Item.OwnerId.S,
+  };
+
+  return { status: 200, list };
 }
 
 export async function deleteList(listId: string) {
   const params: DeleteItemCommandInput = {
-    TableName: process.env.STORAGE_LISTDB_NAME,
+    TableName: process.env.STORAGE_TODOLISTDB_NAME,
     Key: {
       id: { S: listId },
     },
@@ -154,19 +161,25 @@ export async function deleteList(listId: string) {
     return { status: 500, list: null };
   }
 
-  return { status: 204, list: response.Attributes };
+  const list = {
+    id: response.Attributes.id.S,
+    listName: response.Attributes.ListName.S,
+    createdAt: Number(response.Attributes.CreatedAt.N),
+  };
+
+  return { status: 204, list };
 }
 
 export async function getListItems(listId: string, nextToken?: string) {
   const params: QueryCommandInput = {
-    TableName: process.env.STORAGE_LISTITEMDB_NAME,
+    TableName: process.env.STORAGE_TODOLISTITEMDB_NAME,
     IndexName: "ByListId",
     KeyConditionExpression: "ListId = :listId",
     ExpressionAttributeValues: {
       ":listId": { S: listId },
     },
     Limit: 10,
-    ProjectionExpression: "id, Name, Checked, Timestamp",
+    ProjectionExpression: "id, ItemName, Checked, CreatedAt",
   };
 
   if (
@@ -191,15 +204,15 @@ export async function getListItems(listId: string, nextToken?: string) {
   let listItems = response.Items.map((item) => {
     return {
       id: item.id.S,
-      itemName: item.Name.S,
+      itemName: item.ItemName.S,
       checked: item.Checked.BOOL,
-      timestamp: item.Timestamp.N,
+      createdAt: Number(item.CreatedAt.N),
     };
   });
 
-  // Sorts the list items in ascending order by timestamp
+  // Sorts the list items in ascending order by createdAt
   listItems = listItems.sort((a, b) => {
-    return Number(a.timestamp) - Number(b.timestamp);
+    return a.createdAt - b.createdAt;
   });
 
   let nextTokenResponse = null;
@@ -218,13 +231,13 @@ export async function createListItem(
   const itemId = uuidv4();
 
   const params: PutItemCommandInput = {
-    TableName: process.env.STORAGE_LISTITEMDB_NAME,
+    TableName: process.env.STORAGE_TODOLISTITEMDB_NAME,
     Item: {
       ListId: { S: listId },
-      Name: { S: itemName },
+      ItemName: { S: itemName },
       id: { S: itemId },
       Checked: { BOOL: false },
-      Timestamp: { N: Date.now().toString() },
+      CreatedAt: { N: Date.now().toString() },
       OwnerId: { S: userId },
     },
   };
@@ -239,17 +252,17 @@ export async function createListItem(
 
   return {
     status: 200,
-    listItem: { id: itemId, itemName, checked: false, timestamp: Date.now() },
+    listItem: { id: itemId, itemName, checked: false, createdAt: Date.now() },
   };
 }
 
 export async function getListItem(listItemId: string) {
   const params: GetItemCommandInput = {
-    TableName: process.env.STORAGE_LISTITEMDB_NAME,
+    TableName: process.env.STORAGE_TODOLISTITEMDB_NAME,
     Key: {
       id: { S: listItemId },
     },
-    AttributesToGet: ["id", "Name", "Checked", "Timestamp", "OwnerId"],
+    AttributesToGet: ["id", "ItemName", "Checked", "CreatedAt", "OwnerId"],
   };
 
   const response = await dbClient.send(new GetItemCommand(params));
@@ -260,12 +273,20 @@ export async function getListItem(listItemId: string) {
     return { status: 500, listItem: null };
   }
 
-  return { status: 200, listItem: response.Item };
+  const listItem = {
+    id: response.Item.id.S,
+    itemName: response.Item.ItemName.S,
+    checked: response.Item.Checked.BOOL,
+    createdAt: Number(response.Item.CreatedAt.N),
+    ownerId: response.Item.OwnerId.S,
+  };
+
+  return { status: 200, listItem };
 }
 
 export async function deleteListItem(listItemId: string) {
   const params: DeleteItemCommandInput = {
-    TableName: process.env.STORAGE_LISTITEMDB_NAME,
+    TableName: process.env.STORAGE_TODOLISTITEMDB_NAME,
     Key: {
       id: { S: listItemId },
     },
@@ -280,12 +301,19 @@ export async function deleteListItem(listItemId: string) {
     return { status: 500, listItem: null };
   }
 
-  return { status: 204, listItem: response.Attributes };
+  const listItem = {
+    id: response.Attributes.id.S,
+    itemName: response.Attributes.ItemName.S,
+    checked: response.Attributes.Checked.BOOL,
+    createdAt: Number(response.Attributes.CreatedAt.N),
+  };
+
+  return { status: 204, listItem };
 }
 
 export async function setChecked(listItemId: string, checked: boolean) {
   const params: UpdateItemCommandInput = {
-    TableName: process.env.STORAGE_LISTITEMDB_NAME,
+    TableName: process.env.STORAGE_TODOLISTITEMDB_NAMEE,
     Key: {
       id: { S: listItemId },
     },
@@ -306,9 +334,9 @@ export async function setChecked(listItemId: string, checked: boolean) {
 
   const listItem = {
     id: response.Attributes.id.S,
-    name: response.Attributes.Name.S,
+    itemName: response.Attributes.ItemName.S,
     checked: response.Attributes.Checked.BOOL,
-    timestamp: response.Attributes.Timestamp.N,
+    createdAt: Number(response.Attributes.CreatedAt.N),
   };
 
   return { status: 200, listItem };
@@ -316,13 +344,13 @@ export async function setChecked(listItemId: string, checked: boolean) {
 
 export async function renameItem(listItemId: string, newName: string) {
   const params: UpdateItemCommandInput = {
-    TableName: process.env.STORAGE_LISTITEMDB_NAME,
+    TableName: process.env.STORAGE_TODOLISTITEMDB_NAME,
     Key: {
       id: { S: listItemId },
     },
-    UpdateExpression: "SET Name = :name",
+    UpdateExpression: "SET ItemName = :itemName",
     ExpressionAttributeValues: {
-      ":name": { S: newName },
+      ":itemName": { S: newName },
     },
     ReturnValues: "ALL_NEW",
   };
@@ -337,9 +365,9 @@ export async function renameItem(listItemId: string, newName: string) {
 
   const listItem = {
     id: response.Attributes.id.S,
-    name: response.Attributes.Name.S,
+    itemName: response.Attributes.ItemName.S,
     checked: response.Attributes.Checked.BOOL,
-    timestamp: response.Attributes.Timestamp.N,
+    createdAt: Number(response.Attributes.CreatedAt.N),
   };
 
   return { status: 200, listItem };

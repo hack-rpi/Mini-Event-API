@@ -47,7 +47,7 @@ export type AmplifyDependentResourcesAttributes = {
       "Region": "string",
       "StreamArn": "string"
     },
-    "TodoListItemDB": {
+    "TodoListDB": {
       "Arn": "string",
       "Name": "string",
       "PartitionKeyName": "string",
@@ -55,7 +55,7 @@ export type AmplifyDependentResourcesAttributes = {
       "Region": "string",
       "StreamArn": "string"
     },
-    "todoListDB": {
+    "TodoListItemDB": {
       "Arn": "string",
       "Name": "string",
       "PartitionKeyName": "string",

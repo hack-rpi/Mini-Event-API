@@ -89,7 +89,7 @@ app.post("/AddList", async function (req, res) {
       .json({ message: "Unauthorized, no API Key provided.", status: 401 });
   }
 
-  if (!req.body.name) {
+  if (!req.body.listName) {
     return res
       .status(400)
       .json({ message: "Bad Request, missing list name.", status: 400 });
@@ -109,7 +109,7 @@ app.post("/AddList", async function (req, res) {
 
   const createListResponse = await createList(
     apiKeyValidation.ownerId,
-    req.body.name
+    req.body.listName
   );
 
   if (createListResponse.status !== 200) {
@@ -163,12 +163,14 @@ app.delete("/DeleteList", async function (req, res) {
     });
   }
 
-  if (getListResponse.list.OwnerId.S !== apiKeyValidation.ownerId) {
+  if (getListResponse.list.ownerId !== apiKeyValidation.ownerId) {
     return res.status(403).json({
       message: "Forbidden, list does not belong to user.",
       status: 403,
     });
   }
+
+  // TODO: Delete list items first
 
   const deleteListResponse = await deleteList(listId as string);
 
@@ -219,7 +221,7 @@ app.get("/GetListItems", async function (req, res) {
     });
   }
 
-  if (getListResponse.list.OwnerId.S !== apiKeyValidation.ownerId) {
+  if (getListResponse.list.ownerId !== apiKeyValidation.ownerId) {
     return res.status(403).json({
       message: "Forbidden, list does not belong to user.",
       status: 403,
@@ -279,14 +281,14 @@ app.post("/AddListItem", async function (req, res) {
     });
   }
 
-  if (getListResponse.list.OwnerId.S !== apiKeyValidation.ownerId) {
+  if (getListResponse.list.ownerId !== apiKeyValidation.ownerId) {
     return res.status(403).json({
       message: "Forbidden, list does not belong to user.",
       status: 403,
     });
   }
 
-  const listItem = req.body.name;
+  const listItem = req.body.iteName;
 
   if (!listItem) {
     return res
@@ -351,7 +353,7 @@ app.delete("/DeleteListItem", async function (req, res) {
     });
   }
 
-  if (getListItemResponse.listItem.OwnerId.S !== apiKeyValidation.ownerId) {
+  if (getListItemResponse.listItem.ownerId !== apiKeyValidation.ownerId) {
     return res.status(403).json({
       message: "Forbidden, list item does not belong to user.",
       status: 403,
@@ -410,7 +412,7 @@ app.put("/SetChecked", async function (req, res) {
     });
   }
 
-  if (getListItemResponse.listItem.OwnerId.S !== apiKeyValidation.ownerId) {
+  if (getListItemResponse.listItem.ownerId !== apiKeyValidation.ownerId) {
     return res.status(403).json({
       message: "Forbidden, list item does not belong to user.",
       status: 403,
@@ -450,7 +452,7 @@ app.put("/RenameItem", async function (req, res) {
       .json({ message: "Bad Request, missing list item id.", status: 400 });
   }
 
-  const newName = req.query.name;
+  const newName = req.query.newItemName;
 
   if (!newName) {
     return res
@@ -480,7 +482,7 @@ app.put("/RenameItem", async function (req, res) {
     });
   }
 
-  if (getListItemResponse.listItem.OwnerId.S !== apiKeyValidation.ownerId) {
+  if (getListItemResponse.listItem.ownerId !== apiKeyValidation.ownerId) {
     return res.status(403).json({
       message: "Forbidden, list item does not belong to user.",
       status: 403,

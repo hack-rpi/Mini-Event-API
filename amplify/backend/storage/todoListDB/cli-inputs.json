@@ -1,6 +1,6 @@
 {
-  "resourceName": "todoListDB",
-  "tableName": "todoListDB",
+  "resourceName": "TodoListDB",
+  "tableName": "TodoListDB",
   "partitionKey": {
     "fieldName": "id",
     "fieldType": "string"
@@ -13,8 +13,8 @@
         "fieldType": "string"
       },
       "sortKey": {
-        "fieldName": "Timestamp",
-        "fieldType": "string"
+        "fieldName": "CreatedAt",
+        "fieldType": "number"
       }
     }
   ],

@@ -28,17 +28,17 @@
       "Type": "String",
       "Default": "storageAPIKeyDBStreamArn"
     },
-    "storagetodoListDBName": {
+    "storageTodoListDBName": {
       "Type": "String",
-      "Default": "storagetodoListDBName"
+      "Default": "storageTodoListDBName"
     },
-    "storagetodoListDBArn": {
+    "storageTodoListDBArn": {
       "Type": "String",
-      "Default": "storagetodoListDBArn"
+      "Default": "storageTodoListDBArn"
     },
-    "storagetodoListDBStreamArn": {
+    "storageTodoListDBStreamArn": {
       "Type": "String",
-      "Default": "storagetodoListDBStreamArn"
+      "Default": "storageTodoListDBStreamArn"
     },
     "storageTodoListItemDBName": {
       "Type": "String",
@@ -116,13 +116,13 @@
               "Ref": "storageAPIKeyDBStreamArn"
             },
             "STORAGE_TODOLISTDB_NAME": {
-              "Ref": "storagetodoListDBName"
+              "Ref": "storageTodoListDBName"
             },
             "STORAGE_TODOLISTDB_ARN": {
-              "Ref": "storagetodoListDBArn"
+              "Ref": "storageTodoListDBArn"
             },
             "STORAGE_TODOLISTDB_STREAMARN": {
-              "Ref": "storagetodoListDBStreamArn"
+              "Ref": "storageTodoListDBStreamArn"
             },
             "STORAGE_TODOLISTITEMDB_NAME": {
               "Ref": "storageTodoListItemDBName"
@@ -293,14 +293,14 @@
               ],
               "Resource": [
                 {
-                  "Ref": "storagetodoListDBArn"
+                  "Ref": "storageTodoListDBArn"
                 },
                 {
                   "Fn::Join": [
                     "/",
                     [
                       {
-                        "Ref": "storagetodoListDBArn"
+                        "Ref": "storageTodoListDBArn"
                       },
                       "index/*"
                     ]

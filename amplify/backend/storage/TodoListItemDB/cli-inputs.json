@@ -13,8 +13,8 @@
         "fieldType": "string"
       },
       "sortKey": {
-        "fieldName": "Timestamp",
-        "fieldType": "string"
+        "fieldName": "CreatedAt",
+        "fieldType": "number"
       }
     }
   ],

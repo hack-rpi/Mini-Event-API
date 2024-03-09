@@ -100,7 +100,7 @@
             "StreamArn"
           ],
           "category": "storage",
-          "resourceName": "todoListDB"
+          "resourceName": "TodoListDB"
         },
         {
           "attributes": [
@@ -171,11 +171,11 @@
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
     },
-    "TodoListItemDB": {
+    "TodoListDB": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
     },
-    "todoListDB": {
+    "TodoListItemDB": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
     }
