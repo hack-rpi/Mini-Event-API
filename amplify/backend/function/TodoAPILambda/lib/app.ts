@@ -134,7 +134,7 @@ app.delete("/DeleteList", async function (req, res) {
       .json({ message: "Unauthorized, no API Key provided.", status: 401 });
   }
 
-  const listId = req.query.id;
+  const listId = req.query.listId;
 
   if (!listId) {
     return res
@@ -194,7 +194,7 @@ app.get("/GetListItems", async function (req, res) {
       .json({ message: "Unauthorized, no API Key provided.", status: 401 });
   }
 
-  const listId = req.query.id;
+  const listId = req.query.listId;
   if (!listId) {
     return res
       .status(400)
@@ -259,7 +259,14 @@ app.post("/AddListItem", async function (req, res) {
       .status(400)
       .json({ message: "Bad Request, missing listId.", status: 400 });
   }
+  
+  const listItem = req.body.itemName;
 
+  if (!listItem) {
+    return res
+      .status(400)
+      .json({ message: "Bad Request, missing item name.", status: 400 });
+  }
   const apiKeyValidation = await validateApiKey(apiKey);
 
   if (
@@ -268,8 +275,8 @@ app.post("/AddListItem", async function (req, res) {
     !apiKeyValidation.ownerId
   ) {
     return res
-      .status(apiKeyValidation.status)
-      .json({ message: "Unauthorized, invalid API Key.", status: 401 });
+    .status(apiKeyValidation.status)
+    .json({ message: "Unauthorized, invalid API Key.", status: 401 });
   }
 
   const getListResponse = await getList(listId);
@@ -280,7 +287,7 @@ app.post("/AddListItem", async function (req, res) {
       status: getListResponse.status,
     });
   }
-
+  
   if (getListResponse.list.ownerId !== apiKeyValidation.ownerId) {
     return res.status(403).json({
       message: "Forbidden, list does not belong to user.",
@@ -288,13 +295,6 @@ app.post("/AddListItem", async function (req, res) {
     });
   }
 
-  const listItem = req.body.iteName;
-
-  if (!listItem) {
-    return res
-      .status(400)
-      .json({ message: "Bad Request, missing item name.", status: 400 });
-  }
 
   const addListItemResponse = await createListItem(
     listId,
@@ -324,7 +324,7 @@ app.delete("/DeleteListItem", async function (req, res) {
       .json({ message: "Unauthorized, no API Key provided.", status: 401 });
   }
 
-  const listItemId = req.query.id;
+  const listItemId = req.query.itemId;
 
   if (!listItemId) {
     return res
@@ -383,7 +383,7 @@ app.put("/SetChecked", async function (req, res) {
       .json({ message: "Unauthorized, no API Key provided.", status: 401 });
   }
 
-  const listItemId = req.query.id;
+  const listItemId = req.query.itemId;
 
   if (!listItemId) {
     return res
@@ -444,7 +444,7 @@ app.put("/RenameItem", async function (req, res) {
       .json({ message: "Unauthorized, no API Key provided.", status: 401 });
   }
 
-  const listItemId = req.query.id as string;
+  const listItemId = req.query.itemId as string;
 
   if (!listItemId) {
     return res

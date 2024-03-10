@@ -313,7 +313,7 @@ export async function deleteListItem(listItemId: string) {
 
 export async function setChecked(listItemId: string, checked: boolean) {
   const params: UpdateItemCommandInput = {
-    TableName: process.env.STORAGE_TODOLISTITEMDB_NAMEE,
+    TableName: process.env.STORAGE_TODOLISTITEMDB_NAME,
     Key: {
       id: { S: listItemId },
     },
