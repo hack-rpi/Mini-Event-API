@@ -167,7 +167,7 @@ export async function deleteList(listId: string) {
     createdAt: Number(response.Attributes.CreatedAt.N),
   };
 
-  return { status: 204, list };
+  return { status: 200, list };
 }
 
 export async function getListItems(listId: string, nextToken?: string) {
@@ -308,7 +308,7 @@ export async function deleteListItem(listItemId: string) {
     createdAt: Number(response.Attributes.CreatedAt.N),
   };
 
-  return { status: 204, listItem };
+  return { status: 200, listItem };
 }
 
 export async function setChecked(listItemId: string, checked: boolean) {
