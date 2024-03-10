@@ -16,6 +16,7 @@ import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as awsServerlessExpressMiddleware from "aws-serverless-express/middleware";
 import {
+  bulkDeleteListItems,
   createList,
   createListItem,
   deleteList,
@@ -38,8 +39,30 @@ app.use(awsServerlessExpressMiddleware.eventContext());
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
+  try {
+    req.body = convertToJSON(req.body);
+  } catch (e) {
+    return res.status(400).json({
+      message: "Bad Request, invalid body.",
+      status: 400,
+    });
+  }
   next();
 });
+
+function convertToJSON(data: Buffer | string | object | null) {
+  if (Buffer.isBuffer(data)) {
+    return JSON.parse(data.toString());
+  } else if (typeof data === "string") {
+    return JSON.parse(data);
+  } else if (typeof data === "object" && data !== null) {
+    return data; // Already JSON object
+  } else if (data === null) {
+    return {};
+  } else {
+    throw new Error("Unsupported data type");
+  }
+}
 
 app.get("/status", async function (req, res) {
   res.status(200).json({ message: "TODO API Online.", status: 200 });
@@ -67,7 +90,10 @@ app.get("/GetLists", async function (req, res) {
 
   const nextToken = req.query.nextToken;
 
-  const getListsResponse = await getLists(apiKeyValidation.ownerId, nextToken as string);
+  const getListsResponse = await getLists(
+    apiKeyValidation.ownerId,
+    nextToken as string
+  );
 
   if (getListsResponse.status !== 200) {
     return res.status(getListsResponse.status).json({
@@ -172,7 +198,34 @@ app.delete("/DeleteList", async function (req, res) {
     });
   }
 
-  // TODO: Delete list items first
+  let nextToken: string = null;
+
+  do {
+    const getListItemsResponse = await getListItems(
+      listId as string,
+      nextToken
+    );
+
+    if (
+      getListItemsResponse.status !== 200 ||
+      !getListItemsResponse.listItems
+    ) {
+      return res.status(getListItemsResponse.status).json({
+        message: "Error getting list items to delete.",
+        status: getListItemsResponse.status,
+      });
+    }
+
+    const listItemIds = getListItemsResponse.listItems.map((item) => item.id);
+    nextToken = getListItemsResponse.nextToken;
+    const deleteItemsResponse = await bulkDeleteListItems(listItemIds);
+    if (deleteItemsResponse.status !== 200) {
+      return res.status(deleteItemsResponse.status).json({
+        message: "Error deleting list items.",
+        status: deleteItemsResponse.status,
+      });
+    }
+  } while (nextToken);
 
   const deleteListResponse = await deleteList(listId as string);
 
@@ -232,7 +285,10 @@ app.get("/GetListItems", async function (req, res) {
 
   const nextToken = req.query.nextToken;
 
-  const getListItemsResponse = await getListItems(listId as string, nextToken as string);
+  const getListItemsResponse = await getListItems(
+    listId as string,
+    nextToken as string
+  );
 
   if (getListItemsResponse.status !== 200) {
     return res.status(getListItemsResponse.status).json({
@@ -263,7 +319,7 @@ app.post("/AddListItem", async function (req, res) {
       .status(400)
       .json({ message: "Bad Request, missing listId.", status: 400 });
   }
-  
+
   const listItem = req.body.itemName;
 
   if (!listItem) {
@@ -279,8 +335,8 @@ app.post("/AddListItem", async function (req, res) {
     !apiKeyValidation.ownerId
   ) {
     return res
-    .status(apiKeyValidation.status)
-    .json({ message: "Unauthorized, invalid API Key.", status: 401 });
+      .status(apiKeyValidation.status)
+      .json({ message: "Unauthorized, invalid API Key.", status: 401 });
   }
 
   const getListResponse = await getList(listId);
@@ -291,14 +347,13 @@ app.post("/AddListItem", async function (req, res) {
       status: getListResponse.status,
     });
   }
-  
+
   if (getListResponse.list.ownerId !== apiKeyValidation.ownerId) {
     return res.status(403).json({
       message: "Forbidden, list does not belong to user.",
       status: 403,
     });
   }
-
 
   const addListItemResponse = await createListItem(
     listId,
@@ -463,7 +518,6 @@ app.put("/RenameItem", async function (req, res) {
       .status(400)
       .json({ message: "Bad Request, missing new name.", status: 400 });
   }
-
 
   const apiKeyValidation = await validateApiKey(apiKey);
 

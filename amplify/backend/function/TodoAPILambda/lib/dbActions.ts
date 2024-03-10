@@ -10,6 +10,8 @@ import {
   type QueryCommandInput,
   type DeleteItemCommandInput,
   type UpdateItemCommandInput,
+  BatchWriteItemCommand,
+  BatchWriteItemCommandInput,
 } from "@aws-sdk/client-dynamodb";
 
 import { v4 as uuidv4 } from "uuid";
@@ -309,6 +311,34 @@ export async function deleteListItem(listItemId: string) {
   };
 
   return { status: 200, listItem };
+}
+
+export async function bulkDeleteListItems(itemIds: string[]) {
+  const requestItems = itemIds.map((id) => {
+    return {
+      DeleteRequest: {
+        Key: {
+          id: { S: id },
+        },
+      },
+    };
+  });
+
+  const params: BatchWriteItemCommandInput = {
+    RequestItems: {
+      [process.env.STORAGE_TODOLISTITEMDB_NAME]: requestItems,
+    },
+  };
+
+  const response = await dbClient.send(new BatchWriteItemCommand(params));
+
+  if (response.$metadata.httpStatusCode !== 200) {
+    console.log("Issue bulk deleting ListItems");
+    console.error(response);
+    return { status: 500, listItems: [] };
+  }
+
+  return { status: 200, listItems: itemIds };
 }
 
 export async function setChecked(listItemId: string, checked: boolean) {
