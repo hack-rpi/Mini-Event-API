@@ -65,7 +65,9 @@ app.get("/GetLists", async function (req, res) {
       .json({ message: "Unauthorized, invalid API Key.", status: 401 });
   }
 
-  const getListsResponse = await getLists(apiKeyValidation.ownerId);
+  const nextToken = req.query.nextToken;
+
+  const getListsResponse = await getLists(apiKeyValidation.ownerId, nextToken as string);
 
   if (getListsResponse.status !== 200) {
     return res.status(getListsResponse.status).json({
@@ -228,7 +230,9 @@ app.get("/GetListItems", async function (req, res) {
     });
   }
 
-  const getListItemsResponse = await getListItems(listId as string);
+  const nextToken = req.query.nextToken;
+
+  const getListItemsResponse = await getListItems(listId as string, nextToken as string);
 
   if (getListItemsResponse.status !== 200) {
     return res.status(getListItemsResponse.status).json({
