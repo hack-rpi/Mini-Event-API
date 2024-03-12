@@ -1,6 +1,8 @@
 <template>
-  <div class="flex flex-col w-screen h-screen items-start justify-center">
-    <div class="w-full h-16 bg-primary flex items-center justify-center">
+  <div class="flex flex-col w-screen min-h-screen items-start justify-center">
+    <div
+      class="w-full h-16 bg-primary flex items-center justify-center absolute top-0"
+    >
       <div class="w-1/3 flex items-center justify-center">
         <NuxtLink class="text-primary-content text-3xl font-semibold" href="/"
           >HackRPI TODO API</NuxtLink
@@ -15,12 +17,12 @@
         >
       </div>
     </div>
-    <div
-      class="flex items-center justify-center w-full flex-grow flex-shrink basis-auto"
-    >
+    <div class="flex items-center justify-center w-full">
       <slot></slot>
     </div>
-    <div class="w-full h-16 bg-primary flex items-center justify-center">
+    <div
+      class="w-full h-16 bg-primary flex items-center justify-center absolute bottom-0"
+    >
       <div class="w-1/3 flex items-center justify-center">
         <NuxtLink
           href="https://hackrpi.com"

@@ -72,16 +72,21 @@ Amplify.configure(awsconfig);
       <div class="w-full h-full flex flex-col items-center justify-center">
         <h1 class="text-3xl font-bold w-fit">API Key</h1>
         <div class="w-5/6 h-1/3 flex flex-col items-center justify-around">
-          <div v-if="hasAPIKey === false">
+          <div
+            v-if="hasAPIKey === false"
+            class="flex flex-col items-center justify-center"
+          >
             <p>Click the button to see your API Key</p>
-            <button @click="getAPIKey">Show API Key</button>
+            <button @click="getAPIKey" class="btn btn-warning mt-4">
+              Show API Key
+            </button>
           </div>
           <div
             class="flex flex-col items-center justify-around h-full w-full"
             v-else
           >
             <p>Your API Key is:</p>
-            <p class="bg-base-300 p-4 rounded-full mr-4">{{ apiKey }}</p>
+            <p class="bg-base-300 p-4 rounded-full m-4">{{ apiKey }}</p>
             <div>
               <button
                 class="btn btn-primary mx-2"
