@@ -1,10 +1,10 @@
 <template>
   <div
-    class="w-5/6 md:w-1/3 h-[calc(100vh-10rem)] flex items-center justify-center flex-col overflow-y-auto mx-32"
+    class="w-11/12 lg:w-1/2 h-[calc(100vh-10rem)] flex items-center justify-center flex-col"
   >
-    <div class="w-11/12 flex flex-col h-fit pt-[550px]">
+    <div class="w-full flex flex-col overflow-y-auto">
       <h1
-        class="text-3xl font-bold w-fit mb-2 flex items-center justify-center mt-16"
+        class="text-3xl font-bold w-fit mb-2 flex items-center justify-center"
       >
         Overview
       </h1>
@@ -43,69 +43,69 @@
         The API has the following endpoints for manipulating lists and list
         items. You can learn more about each endpoint, what they do, what the
         request should look like and what the response will look like by
-        clicking on the link.
+        clicking on the link. The endpoints should be capitalized as shown.
       </p>
       <ul class="list-disc list-inside">
         <li>
           <NuxtLink
             href="/docs/endpoints/#status"
-            class="btn btn-link btn-primary"
+            class="btn btn-sm btn-link btn-primary"
             >status</NuxtLink
           >
         </li>
         <li>
           <NuxtLink
             href="/docs/endpoints/#GetLists"
-            class="btn btn-link btn-primary"
+            class="btn btn-sm btn-link btn-primary"
             >GetLists</NuxtLink
           >
         </li>
         <li>
           <NuxtLink
             href="/docs/endpoints/#AddList"
-            class="btn btn-link btn-primary"
+            class="btn btn-sm btn-link btn-primary"
             >AddList</NuxtLink
           >
         </li>
         <li>
           <NuxtLink
             href="/docs/endpoints/#DeleteList"
-            class="btn btn-link btn-primary"
+            class="btn btn-sm btn-link btn-primary"
             >DeleteList</NuxtLink
           >
         </li>
         <li>
           <NuxtLink
             href="/docs/endpoints/#GetListItems"
-            class="btn btn-link btn-primary"
+            class="btn btn-sm btn-link btn-primary"
             >GetListItems</NuxtLink
           >
         </li>
         <li>
           <NuxtLink
             href="/docs/endpoints/#AddListItem"
-            class="btn btn-link btn-primary"
+            class="btn btn-sm btn-link btn-primary"
             >AddListItem</NuxtLink
           >
         </li>
         <li>
           <NuxtLink
             href="/docs/endpoints/#DeleteListItem"
-            class="btn btn-link btn-primary"
+            class="btn btn-sm btn-link btn-primary"
             >DeleteListItem</NuxtLink
           >
         </li>
         <li>
           <NuxtLink
             href="/docs/endpoints/#SetChecked"
-            class="btn btn-link btn-primary"
+            class="btn btn-sm btn-link btn-primary"
             >SetChecked</NuxtLink
           >
         </li>
         <li>
           <NuxtLink
             href="/docs/endpoints/#RenameItem"
-            class="btn btn-link btn-primary"
+            class="btn btn-sm btn-link btn-primary"
             >RenameItem</NuxtLink
           >
         </li>
