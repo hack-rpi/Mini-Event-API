@@ -1,8 +1,8 @@
 <template>
   <div
-    class="w-11/12 h-[calc(100vh-10rem)] flex items-start justify-start flex-col"
+    class="w-11/12 h-[calc(100vh-10rem)] flex items-start justify-start flex-col overflow-y-auto"
   >
-    <div class="w-full flex flex-col overflow-y-auto">
+    <div class="w-full flex flex-col">
       <!-- Status -->
       <div id="status" class="flex flex-col w-full items-start justify-center">
         <h1 class="text-3xl font-bold w-fit mb-2">status (GET)</h1>

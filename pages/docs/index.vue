@@ -90,13 +90,6 @@
         </li>
         <li>
           <NuxtLink
-            href="/docs/endpoints/#DeleteListItem"
-            class="btn btn-sm btn-link btn-primary"
-            >DeleteListItem</NuxtLink
-          >
-        </li>
-        <li>
-          <NuxtLink
             href="/docs/endpoints/#SetChecked"
             class="btn btn-sm btn-link btn-primary"
             >SetChecked</NuxtLink
@@ -107,6 +100,13 @@
             href="/docs/endpoints/#RenameItem"
             class="btn btn-sm btn-link btn-primary"
             >RenameItem</NuxtLink
+          >
+        </li>
+        <li>
+          <NuxtLink
+            href="/docs/endpoints/#DeleteListItem"
+            class="btn btn-sm btn-link btn-primary"
+            >DeleteListItem</NuxtLink
           >
         </li>
       </ul>
