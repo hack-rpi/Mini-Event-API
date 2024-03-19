@@ -1,3 +1,4 @@
+// @ts-ignore
 import * as awsServerlessExpress from 'aws-serverless-express';
 import app from './app';
 

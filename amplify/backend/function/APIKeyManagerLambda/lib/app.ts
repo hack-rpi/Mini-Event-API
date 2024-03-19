@@ -6,10 +6,13 @@
 	STORAGE_APIKEYDB_STREAMARN
   AUTH_MINIEVENTAUTH_USERPOOLID
 Amplify Params - DO NOT EDIT */
-
+// @ts-ignore
 import * as express from "express";
+// @ts-ignore
 import * as bodyParser from "body-parser";
+// @ts-ignore
 import * as awsServerlessExpressMiddleware from "aws-serverless-express/middleware";
+// @ts-ignore
 import { CognitoJwtVerifier } from "aws-jwt-verify";
 import {
   getApiKey,
