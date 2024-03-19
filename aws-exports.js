@@ -6,19 +6,19 @@ const awsmobile = {
     "aws_cloud_logic_custom": [
         {
             "name": "APIKeyManager",
-            "endpoint": "https://4l6dunl8il.execute-api.us-east-1.amazonaws.com/staging",
+            "endpoint": "https://yzg6fs9jvg.execute-api.us-east-1.amazonaws.com/production",
             "region": "us-east-1"
         },
         {
             "name": "TodoAPI",
-            "endpoint": "https://yu9gj7c8xb.execute-api.us-east-1.amazonaws.com/staging",
+            "endpoint": "https://1iojqw44tj.execute-api.us-east-1.amazonaws.com/production",
             "region": "us-east-1"
         }
     ],
-    "aws_cognito_identity_pool_id": "us-east-1:294d5637-73fb-42d4-b726-b239e904d063",
+    "aws_cognito_identity_pool_id": "us-east-1:27cfe599-2244-4ccd-b5cf-7d92690bca21",
     "aws_cognito_region": "us-east-1",
-    "aws_user_pools_id": "us-east-1_1DywmQkkA",
-    "aws_user_pools_web_client_id": "59hug3bubfn0shpsm5487osa2l",
+    "aws_user_pools_id": "us-east-1_TjXYqlPfH",
+    "aws_user_pools_web_client_id": "4kcbuagtnj88a4i9q75nc354bq",
     "oauth": {},
     "aws_cognito_username_attributes": [
         "EMAIL"
@@ -41,15 +41,15 @@ const awsmobile = {
     "aws_dynamodb_all_tables_region": "us-east-1",
     "aws_dynamodb_table_schemas": [
         {
-            "tableName": "APIKeyDB-staging",
+            "tableName": "APIKeyDB-production",
             "region": "us-east-1"
         },
         {
-            "tableName": "TodoListDB-staging",
+            "tableName": "TodoListDB-production",
             "region": "us-east-1"
         },
         {
-            "tableName": "TodoListItemDB-staging",
+            "tableName": "TodoListItemDB-production",
             "region": "us-east-1"
         }
     ]
