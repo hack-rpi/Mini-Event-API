@@ -1,4 +1,3 @@
-// @ts-ignore
 import {
   DynamoDBClient,
   PutItemCommand,
@@ -13,6 +12,7 @@ import {
   type UpdateItemCommandInput,
   BatchWriteItemCommand,
   BatchWriteItemCommandInput,
+// @ts-ignore
 } from "@aws-sdk/client-dynamodb";
 
 import { v4 as uuidv4 } from "uuid";

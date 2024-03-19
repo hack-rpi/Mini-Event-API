@@ -1,4 +1,3 @@
-// @ts-ignore
 import {
   DynamoDBClient,
   GetItemCommand,
@@ -7,6 +6,7 @@ import {
   type GetItemCommandInput,
   type PutItemCommandInput,
   type DeleteItemCommandInput,
+// @ts-ignore
 } from "@aws-sdk/client-dynamodb";
 
 import * as crypto from "crypto";
