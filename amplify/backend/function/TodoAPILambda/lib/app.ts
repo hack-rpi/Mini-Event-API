@@ -42,14 +42,6 @@ app.use(awsServerlessExpressMiddleware.eventContext());
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
-  try {
-    req.body = convertToJSON(req.body);
-  } catch (e) {
-    return res.status(400).json({
-      message: "Bad Request, invalid body.",
-      status: 400,
-    });
-  }
   next();
 });
 
@@ -118,6 +110,15 @@ app.post("/AddList", async function (req, res) {
     return res
       .status(401)
       .json({ message: "Unauthorized, no API Key provided.", status: 401 });
+  }
+
+  try {
+    req.body = convertToJSON(req.body);
+  } catch (e) {
+    return res.status(400).json({
+      message: "Bad Request, invalid body.",
+      status: 400,
+    });
   }
 
   if (!req.body.listName) {
@@ -315,6 +316,15 @@ app.post("/AddListItem", async function (req, res) {
       .json({ message: "Unauthorized, no API Key provided.", status: 401 });
   }
 
+  try {
+    req.body = convertToJSON(req.body);
+  } catch (e) {
+    return res.status(400).json({
+      message: "Bad Request, invalid body.",
+      status: 400,
+    });
+  }
+
   const listId = req.body.listId;
 
   if (!listId) {
@@ -436,7 +446,7 @@ app.delete("/DeleteListItem", async function (req, res) {
     .json({ ...deleteListItemResponse, message: "List item deleted." });
 });
 
-app.put("/SetChecked", async function (req, res) {
+app.patch("/SetChecked", async function (req, res) {
   const apiKey = req.headers.authorization;
 
   if (!apiKey) {
@@ -497,7 +507,7 @@ app.put("/SetChecked", async function (req, res) {
     .json({ ...setCheckedResponse, message: "List item checked status set." });
 });
 
-app.put("/RenameItem", async function (req, res) {
+app.patch("/RenameItem", async function (req, res) {
   const apiKey = req.headers.authorization;
 
   if (!apiKey) {

@@ -436,7 +436,7 @@
         id="SetChecked"
         class="flex flex-col w-full items-start justify-center"
       >
-        <h1 class="text-3xl font-bold w-fit mb-2">SetChecked (PUT)</h1>
+        <h1 class="text-3xl font-bold w-fit mb-2">SetChecked (PATCH)</h1>
         <p>
           This endpoint is used to set the checked status of a list item. The
           request query strings should contain the id of the list item and the
@@ -515,7 +515,7 @@
         id="RenameItem"
         class="flex flex-col w-full items-start justify-center"
       >
-        <h1 class="text-3xl font-bold w-fit mb-2">RenameItem (PUT)</h1>
+        <h1 class="text-3xl font-bold w-fit mb-2">RenameItem (PATCH)</h1>
         <p>
           This endpoint is used to rename a list item. The request query strings
           should contain the id of the list item and the new name of the item.
