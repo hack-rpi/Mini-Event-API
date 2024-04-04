@@ -84,9 +84,9 @@ export async function getLists(userId: string, nextToken?: string) {
     };
   });
 
-  // Sorts the lists in ascending order by createdAt
+  // Sorts the lists in descending order by createdAt
   lists = lists.sort((a, b) => {
-    return a.createdAt - b.createdAt;
+    return b.createdAt - a.createdAt ;
   });
 
   let nextTokenResponse = null;
@@ -213,9 +213,9 @@ export async function getListItems(listId: string, nextToken?: string) {
     };
   });
 
-  // Sorts the list items in ascending order by createdAt
+  // Sorts the list items in decending order by createdAt
   listItems = listItems.sort((a, b) => {
-    return a.createdAt - b.createdAt;
+    return b.createdAt - a.createdAt;
   });
 
   let nextTokenResponse = null;

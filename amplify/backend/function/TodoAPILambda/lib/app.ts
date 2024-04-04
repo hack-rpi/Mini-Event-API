@@ -222,6 +222,9 @@ app.delete("/DeleteList", async function (req, res) {
 
     const listItemIds = getListItemsResponse.listItems.map((item) => item.id);
     nextToken = getListItemsResponse.nextToken;
+    if (listItemIds.length === 0) {
+      break;
+    }
     const deleteItemsResponse = await bulkDeleteListItems(listItemIds);
     if (deleteItemsResponse.status !== 200) {
       return res.status(deleteItemsResponse.status).json({
