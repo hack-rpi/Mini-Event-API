@@ -1,8 +1,21 @@
 <template>
-  <div
-    class="w-11/12 lg:w-1/2 h-[calc(100vh-10rem)] flex items-center justify-center flex-col"
-  >
-    <div class="w-full flex flex-col overflow-y-auto">
+  <div class="w-full h-16 bg-primary flex items-center justify-center">
+    <div class="w-1/3 flex items-center justify-center">
+      <NuxtLink class="text-primary-content text-3xl font-semibold" href="/"
+        >HackRPI TODO API</NuxtLink
+      >
+    </div>
+    <div class="w-2/3 flex items-center justify-end">
+      <NuxtLink class="mx-4 btn btn-secondary btn-sm w-32" href="/docs"
+        >Docs</NuxtLink
+      >
+      <NuxtLink class="mx-4 btn btn-secondary btn-sm w-32" href="/api-key"
+        >Get an API Key</NuxtLink
+      >
+    </div>
+  </div>
+  <div class="w-full h-fit flex items-center justify-center flex-col">
+    <div class="w-11/12 flex flex-col overflow-y-auto">
       <h1
         class="text-3xl font-bold w-fit mb-2 flex items-center justify-center"
       >

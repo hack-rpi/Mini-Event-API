@@ -1,8 +1,21 @@
 <template>
-  <div
-    class="w-11/12 h-[calc(100vh-10rem)] flex items-start justify-start flex-col overflow-y-auto"
-  >
-    <div class="w-full flex flex-col">
+  <div class="w-full h-16 bg-primary flex items-center justify-center">
+    <div class="w-1/3 flex items-center justify-center">
+      <NuxtLink class="text-primary-content text-3xl font-semibold" href="/"
+        >HackRPI TODO API</NuxtLink
+      >
+    </div>
+    <div class="w-2/3 flex items-center justify-end">
+      <NuxtLink class="mx-4 btn btn-secondary btn-sm w-32" href="/docs"
+        >Docs</NuxtLink
+      >
+      <NuxtLink class="mx-4 btn btn-secondary btn-sm w-32" href="/api-key"
+        >Get an API Key</NuxtLink
+      >
+    </div>
+  </div>
+  <div class="w-full flex items-center justify-center flex-col mt-8">
+    <div class="w-11/12 flex flex-col items-center justify-center">
       <!-- Status -->
       <div id="status" class="flex flex-col w-full items-start justify-center">
         <h1 class="text-3xl font-bold w-fit mb-2">status (GET)</h1>
@@ -453,7 +466,7 @@
     headers: {
       authorization: String
     },
-    body: {
+    queryStringParameters: {
       itemId: String,
       checked: Boolean
     },
@@ -462,7 +475,7 @@
               </code>
               <p>
                 This endpoint requires the API key to be passed in the
-                authorization header. The request body should contain the id of
+                authorization header. The request query strings should contain the id of
                 the list item and the checked status.
               </p>
             </div>
@@ -531,7 +544,7 @@
     headers: {
       authorization: String
     },
-    body: {
+    queryStringParameters: {
       itemId: String,
       newItemName: String
     },
@@ -540,7 +553,7 @@
               </code>
               <p>
                 This endpoint requires the API key to be passed in the
-                authorization header. The request body should contain the id of
+                authorization header. The request query strings should contain the id of
                 the list item to update and the new name of the item.
               </p>
             </div>
