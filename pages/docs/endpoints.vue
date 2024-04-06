@@ -63,16 +63,16 @@
       >
         <h1 class="text-3xl font-bold w-fit mb-2">GetLists (GET)</h1>
         <p>
-          This endpoints returns 25 of the lists owned by by the owner of the
+          This endpoints returns 10 of the lists owned by by the owner of the
           API key. The lists are returned in the order of creation, with the
           oldest list being the first in the list. If there are no lists, the
           response will be an empty array. <br />
-          The response is paginated, with a maximum of 25 lists per page, if
-          there are more than 25 lists, the response nextToken will be non-null.
+          The response is paginated, with a maximum of 10 lists per page, if
+          there are more than 10 lists, the response nextToken will be non-null.
           <br />
           If the nextToken is provided in the request, the response will contain
-          the next 25 lists after the list with the nextToken. If the nextToken
-          is not provided, the response will contain the first 25 lists.
+          the next 10 lists after the list with the nextToken. If the nextToken
+          is not provided, the response will contain the first 10 lists.
         </p>
         <div class="w-full flex items-start justify-center flex-wrap">
           <div class="w-11/12 md:w-1/2 p-2">
