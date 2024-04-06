@@ -37,7 +37,7 @@
         >
         <NuxtLink
           class="btn btn-secondary w-1/5"
-          href="https://docs.google.com/presentation/d/1xv9dpFZsL-EIRKxk0VMnHiqxxm5tmzWKZxTvCvlUPSc/edit?usp=sharing"
+          href="https://docs.google.com/presentation/d/1wBQeFZyV0J69RwanNrizP4d-XtqNjhslv2ddzeePHd8/edit?usp=sharing"
           >Slides</NuxtLink
         >
       </div>
